@@ -1,5 +1,7 @@
 # Bones/Start of Media Class
 import random, string
+import tkinter as tk
+from tkinter import ttk
 
 class Media:
     def __init__(self, name, media_type, genre, author, in_stock, tags):
@@ -45,3 +47,7 @@ class Media:
         # not sure what exactly we will add here. Maybe things like condition: new or cut: Director's
         # key will store the first, value stores the second.
         return cls(name, media_type, genre, author, in_stock, tags)
+    
+
+
+

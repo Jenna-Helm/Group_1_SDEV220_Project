@@ -1,127 +1,71 @@
 import tkinter as tk
 from tkinter import ttk
 import random as random
+import Media_Class as mc
+import Person_Class as pc
+import Checkouts_Class as cc
 
-'''
-========================================
-=============Create classes=============
-========================================
-'''
+# create a class for the root menu
+class RootMenu(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.geometry('400x150')
+        self.title("Library Systems")
 
+        
+        #create buttons
+        #staff
+        staff_button = ttk.Button(
+            self,
+            text="Staff"
+        )
+        staff_button.pack(
+            ipadx=5,
+            ipady=5,
+            side=tk.LEFT,
+            expand=True
+        )
 
-class Person():
-    
-    # == base person class used for all people classes == 
-    
-    persons = [] # stores all objects that represent people. be it staff or other
-    
-    def __init__(self,fName,lName):
-        self.fName = fName
-        self.lName = lName
+        #media
+        invintory_button = ttk.Button(
+            self,
+            text="Invintory"
+        )
+        invintory_button.pack(
+            ipadx=5,
+            ipady=5,
+            side=tk.LEFT,
+            expand=True
+        )
 
-class Staff(Person):
-    
-    # == a subclass of person used for library staff ==
+        #checkouts
+        checkout_ex_button = ttk.Button(
+            self,
+            text="Checkouts/existing"
+        )
+        checkout_ex_button.pack(
+            ipadx=5,
+            ipady=5,
+            side=tk.LEFT,
+            expand=True
+        )
 
-    def __init__(self,position,fName,lName):
-        super().__init__(fName,lName) #bring in the first and last name from the parent class
-        self.position = str(position)
-        # self.staffId (the id should be generated when the object is created)
-        # self.hireDate (the hire date should be generated when the object is created)
-        # self.staffEmail (it may be better to provide the email, but in theory the system can make it. for now just a comment)
+        #checkouts
+        checkout_new_button = ttk.Button(
+            self,
+            text="Checkouts/new"
+        )
+        checkout_new_button.pack(
+            ipadx=5,
+            ipady=5,
+            side=tk.LEFT,
+            expand=True
+        )
+     
+if __name__ == "__main__":
+    #create the windows
+    root = RootMenu() #Core window
+    checkoutNew = cc.CheckoutNew()
+    #checkoutNew.mainloop()
 
-    @classmethod
-    def add(cls,fName,lName,Position):
-        pass
-    
-    def remove(self,staffId):
-        pass
-
-    @classmethod
-    def list_all(cls):
-        pass
-
-
-
-
-
-
-'''
-=====================================
-=============Create data=============
-=====================================
-'''
-
-
-
-
-'''
-========================================
-=============Create windows=============
-========================================
-'''
-
-# create main window
-root = tk.Tk()
-root.geometry('400x150')
-root.title("Library Systems")
-
-#create buttons
-
-#staff
-staff_button = ttk.Button(
-    root,
-    text="Staff"
-)
-staff_button.pack(
-    ipadx=5,
-    ipady=5,
-    side=tk.LEFT,
-    expand=True
-)
-
-#media
-invintory_button = ttk.Button(
-    root,
-    text="Invintory"
-)
-invintory_button.pack(
-    ipadx=5,
-    ipady=5,
-    side=tk.LEFT,
-    expand=True
-)
-
-#checkouts
-checkout_ex_button = ttk.Button(
-    root,
-    text="Checkouts/existing"
-)
-checkout_ex_button.pack(
-    ipadx=5,
-    ipady=5,
-    side=tk.LEFT,
-    expand=True
-)
-
-#checkouts
-checkout_new_button = ttk.Button(
-    root,
-    text="Checkouts/new"
-)
-checkout_new_button.pack(
-    ipadx=5,
-    ipady=5,
-    side=tk.LEFT,
-    expand=True
-)
-
-
-#checkouts new checkout
-newCheckout = tk.Tk()
-newCheckout.geometry('400x850')
-newCheckout.title("New Checkout")
-
-
-
-root.mainloop()
+    #root.mainloop()
