@@ -1,0 +1,198 @@
+
+import random, string
+import tkinter as tk
+from tkinter import ttk, filedialog
+import csv, os
+
+class Media:
+    def __init__(self, name, media_type, genre, author, serial_num, in_stock, tags):
+        self.name = name
+        self.media_type = media_type
+        self.genre = genre
+        self.author = author
+        self.unique_id = self.generate_unique_id()
+        self.serial_num = serial_num
+        self.in_stock = in_stock
+        self.tags = tags
+
+    @staticmethod
+    def generate_unique_id(length=8):
+        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+
+    def print_details(self):
+        details = (
+            f"Name: {self.name}\n"
+            f"Type: {self.media_type}\n"
+            f"Genre: {self.genre}\n"
+            f"Author: {self.author}\n"
+            f"ID: {self.unique_id}\n"
+            f"Serial Number: {self.serial_num}\n"
+            f"In Stock: {'Yes' if self.in_stock else 'No'}\n"
+            f"Tags: {', '.join(self.tags)}"
+        )
+        print(details)
+
+class MediaApp:
+    def __init__(self, main_window):
+        self.root = main_window
+        self.root.title("LibraryTraks Media Management")
+        self.media_list = []
+
+        # Initialize widgets
+        self.form_frame = ttk.LabelFrame(self.root, text="Add New Media")
+        self.name_entry = ttk.Entry(self.form_frame)
+        self.type_entry = ttk.Entry(self.form_frame)
+        self.genre_entry = ttk.Entry(self.form_frame)
+        self.author_entry = ttk.Entry(self.form_frame)
+        self.serial_entry = ttk.Entry(self.form_frame)
+        self.in_stock_var = tk.BooleanVar()
+        self.in_stock_check = ttk.Checkbutton(self.form_frame, variable=self.in_stock_var)
+        self.tags_entry = ttk.Entry(self.form_frame)
+        self.add_button = ttk.Button(self.form_frame, text="Add Media", command=self.add_media)
+        self.load_button = ttk.Button(self.root, text="Load Media from File", command=self.load_media_from_file_dialog, width=20)
+        self.list_frame = ttk.LabelFrame(self.root, text="Media List")
+        self.tree = ttk.Treeview(self.list_frame, columns=("ID", "Name", "Type", "Genre", "Author", "Serial Number", "In Stock", "Tags"), show="headings")
+        self.delete_button = ttk.Button(self.root, text="Delete Selected", command=self.delete_selected_media)
+        self.save_close_button = ttk.Button(self.root, text="Save & Close", command=self.save_and_close)
+
+        self.create_widgets()
+        self.load_media_from_file('media_data.csv')
+
+    def create_widgets(self):
+        # Form to add new media
+        self.form_frame.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
+
+        # Unique ID Label
+        self.id_label = ttk.Label(self.form_frame, text="ID:")
+        self.id_value = ttk.Label(self.form_frame, text="")
+        self.id_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+        self.id_value.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+
+        ttk.Label(self.form_frame, text="Name:").grid(row=1, column=0, padx=5, pady=5, sticky="w")
+        self.name_entry.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
+
+        ttk.Label(self.form_frame, text="Type:").grid(row=2, column=0, padx=5, pady=5, sticky="w")
+        self.type_entry.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
+
+        ttk.Label(self.form_frame, text="Genre:").grid(row=3, column=0, padx=5, pady=5, sticky="w")
+        self.genre_entry.grid(row=3, column=1, padx=5, pady=5, sticky="ew")
+
+        ttk.Label(self.form_frame, text="Author:").grid(row=4, column=0, padx=5, pady=5, sticky="w")
+        self.author_entry.grid(row=4, column=1, padx=5, pady=5, sticky="ew")
+
+        ttk.Label(self.form_frame, text="Serial Number:").grid(row=5, column=0, padx=5, pady=5, sticky="w")
+        self.serial_entry.grid(row=5, column=1, padx=5, pady=5, sticky="ew")
+
+        ttk.Label(self.form_frame, text="In Stock:").grid(row=6, column=0, padx=5, pady=5, sticky="w")
+        self.in_stock_check.grid(row=6, column=1, padx=5, pady=5, sticky="w")
+
+        ttk.Label(self.form_frame, text="Tags:").grid(row=7, column=0, padx=5, pady=5, sticky="w")
+        self.tags_entry.grid(row=7, column=1, padx=5, pady=5, sticky="ew")
+
+        self.add_button.grid(row=8, column=0, columnspan=2, padx=5, pady=5)
+
+        # Button to load media from file
+        self.load_button.grid(row=9, column=0, padx=5, pady=5, sticky="w")
+
+        # Grid to display media
+        self.list_frame.grid(row=10, column=0, padx=10, pady=10, sticky="nsew")
+        self.tree.grid(row=0, column=0, sticky="nsew")
+        self.list_frame.grid_rowconfigure(0, weight=1)
+        self.list_frame.grid_columnconfigure(0, weight=1)
+
+        # Column configuration 
+        for col in self.tree["columns"]:
+            self.tree.heading(col, text=col)
+            self.tree.column(col, width=100)
+
+        self.delete_button.grid(row=11, column=0, padx=5, pady=5, sticky="ew")
+        self.save_close_button.grid(row=12, column=0, padx=5, pady=5, sticky="e")
+        self.root.grid_rowconfigure(3, weight=1)
+        self.root.grid_columnconfigure(0, weight=1)
+
+    def add_media(self):
+        name = self.name_entry.get()
+        media_type = self.type_entry.get()
+        genre = self.genre_entry.get()
+        author = self.author_entry.get()
+        serial_num = self.serial_entry.get()
+        in_stock = self.in_stock_var.get()
+        tags = self.tags_entry.get().split(',')
+
+        new_media = Media(name, media_type, genre, author, serial_num, in_stock, tags)
+        self.media_list.append(new_media)
+        new_media.print_details()
+
+        # Update the unique ID label
+        self.id_value.config(text=new_media.unique_id)
+
+        # Add to treeview
+        self.tree.insert("", "end", values=(new_media.unique_id, name, media_type, genre, author, serial_num, "Yes" if in_stock else "No", ", ".join(tags)))
+
+        # Clear the form
+        self.name_entry.delete(0, tk.END)
+        self.type_entry.delete(0, tk.END)
+        self.genre_entry.delete(0, tk.END)
+        self.author_entry.delete(0, tk.END)
+        self.serial_entry.delete(0, tk.END)
+        self.in_stock_var.set(False)
+        self.tags_entry.delete(0, tk.END)
+        self.id_value.config(text="")
+
+    def load_media_from_file_dialog(self):
+        file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
+        if file_path:
+            self.load_media_from_file(file_path)
+
+    def load_media_from_file(self, file_path):
+        if not os.path.exists(file_path):
+            return
+        with open(file_path, newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                name = row.get('Name', 'Unknown')
+                media_type = row.get('Type', 'Unknown')
+                genre = row.get('Genre', 'Unknown')
+                author = row.get('Author', 'Unknown')
+                serial_num = row.get('Serial Number', 'Unknown')
+                in_stock = row.get('In Stock', 'no').lower() == 'yes'
+                tags = row.get('Tags', '').split(',')
+
+                new_media = Media(name, media_type, genre, author, serial_num, in_stock, tags)
+                self.media_list.append(new_media)
+                new_media.print_details()
+
+                # Add to treeview
+                self.tree.insert("", "end", values=(name, media_type, genre, author, serial_num, "Yes" if in_stock else "No", ", ".join(tags)))
+
+    def delete_selected_media(self):
+        selected_items = self.tree.selection()
+        for item in selected_items:
+            self.tree.delete(item)
+
+    def save_and_close(self):
+        self.save_media_to_file('media_data.csv')
+        self.root.destroy()
+
+    def save_media_to_file(self, file_path):
+        with open(file_path, 'w', newline='') as csvfile:
+            fieldnames = ['ID', 'Name', 'Type', 'Genre', 'Author', 'Serial Number', 'In Stock', 'Tags']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            writer.writeheader()
+            for media in self.media_list:
+                writer.writerow({
+                    'ID': media.unique_id,
+                    'Name': media.name,
+                    'Type': media.media_type,
+                    'Genre': media.genre,
+                    'Author': media.author,
+                    'Serial Number': media.serial_num,
+                    'In Stock': 'Yes' if media.in_stock else 'No',
+                    'Tags': ', '.join(media.tags)
+                })
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = MediaApp(root)
+    root.mainloop()
