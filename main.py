@@ -61,7 +61,7 @@ class RootMenu(tk.Tk):
             side=tk.LEFT,
             expand=True
         )
-     
+
 if __name__ == "__main__":
     #create the windows
     root = RootMenu() #Core window

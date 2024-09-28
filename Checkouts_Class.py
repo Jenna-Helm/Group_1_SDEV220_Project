@@ -1,9 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import Text
-
+import random, string
+import datetime as time
 
 class CheckoutNew(tk.Tk):
+    #How long until items must be returned in days
+    checkout_time = 14
+    
     def __init__(self):
         super().__init__()
         self.geometry('655x850')
@@ -19,14 +23,14 @@ class CheckoutNew(tk.Tk):
         )
         clerk_name.grid(column=0,row=0)
 
-        checkNameInput = Text(
+        self.checkNameInput = Text(
             clerk_name,
             height=1,
             width=20,
             relief="raised"
         )
-        checkNameInput.grid(column=0,row=0)
-        checkNameInput.insert(1.0,"Lizzy") #place holder name. 
+        self.checkNameInput.grid(column=0,row=0)
+        self.checkNameInput.insert(1.0,"Lizzy") #place holder name. 
         
         # checkout customer >>>>>>>
 
@@ -36,14 +40,14 @@ class CheckoutNew(tk.Tk):
         )
         card_holder_frame.grid(column=1,row=0)
 
-        cardHolderNameInput = Text(
+        self.cardHolderNameInput = Text(
             card_holder_frame,
             height=1,
             width=20,
             relief="raised"
         )
-        cardHolderNameInput.grid(column=1,row=0)
-        cardHolderNameInput.insert(1.0,"Bob") #place holder name. 
+        self.cardHolderNameInput.grid(column=1,row=0)
+        self.cardHolderNameInput.insert(1.0,"Bob") #place holder name. 
 
         #create an add button. <<<<<<<<<<<<<<<<<<<<<<<<
         #frame to hold the checkout entry and button
@@ -110,12 +114,43 @@ class CheckoutNew(tk.Tk):
             self.cart.delete(selected)
 
     def finish_checkout(self):
-        file = open("checkouts/checkout.text","w")
+        #generate a random checkout number.
+        checkout_num = str(self.generate_unique_id())
+        checkout_time = str(time.datetime.now())
+        formated_time = checkout_time.replace(".","-").replace(" ","-").replace(":","-")
+        
+        #make a file name using the time and a random code
+        file_name = f'{formated_time} --- {checkout_num}'
 
+        #print the checkout file name
+        print(f'\n created checkout file {file_name}\n')
+
+        #create a new checkout item
+        file = open(f'./checkouts/{file_name}.txt', 'w')
+
+        #write the clerk and card holders name to the file
+        file.write(f'Checkout clerk : {self.checkNameInput.get(1.0,"end-1c")} \n')
+        file.write(f'Card holder number : {self.cardHolderNameInput.get(1.0,"end-1c")} \n \n')
+
+        #write when items must be returned
+        return_by = str(time.datetime.now() + time.timedelta(days=self.checkout_time)).split()[0]
+        file.write(f'Return by date : {return_by} \n \n')
+
+        file.write("Items checkedout >>>>>>>>>>>>>>>>\n")
+        #write the items to the checkout text file
         for item in self.cart.get_children():
-            file.write(str(self.cart.item(item, 'values')))
+            item_values = self.cart.item(item, 'values')
+            item_str = ' '.join(item_values)
+            file.write(f'item //  {item_str} \n')
+        
+        file.write("Items checkedout <<<<<<<<<<<<<<<<\n")
 
         file.close()
+
+    # Generates 5 digit unique id   
+    @staticmethod
+    def generate_unique_id(length=5):
+        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
 
 
