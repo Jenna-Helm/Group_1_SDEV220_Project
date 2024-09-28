@@ -137,14 +137,19 @@ class CheckoutNew(tk.Tk):
         file.write(f'Return by date : {return_by} \n \n')
 
         file.write("Items checkedout >>>>>>>>>>>>>>>>\n")
-        #write the items to the checkout text file
-        for item in self.cart.get_children():
+        # Write the items to the checkout text file
+        for index, item in enumerate(self.cart.get_children(), start=1):
+            
+            #read an item from the list
             item_values = self.cart.item(item, 'values')
-            item_str = ' '.join(item_values)
-            file.write(f'item //  {item_str} \n')
+            item_str = ' '.join(item_values)            
+
+            #write to the file
+            file.write(f'   {index} -- {item_str} \n')
+
         
         file.write("Items checkedout <<<<<<<<<<<<<<<<\n")
-
+        
         file.close()
 
     # Generates 5 digit unique id   

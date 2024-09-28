@@ -1,12 +1,12 @@
 Checkout clerk : Lizzy 
-Card holder number : Tony 
+Card holder number : Bob 
  
 Return by date : 2024-10-12 
  
 Items checkedout >>>>>>>>>>>>>>>>
-item //  3245543 
-item //  2345234 
-item //  346234 
-item //  2346 
-item //  23434 
+   1 -- 1353 
+   2 -- 5545 
+   3 -- 26466 
+   4 -- 75464 
+   5 -- 14132 
 Items checkedout <<<<<<<<<<<<<<<<

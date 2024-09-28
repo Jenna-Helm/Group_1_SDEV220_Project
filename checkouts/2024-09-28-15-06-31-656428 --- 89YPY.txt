@@ -1,0 +1,12 @@
+Checkout clerk : Bob 
+Card holder number : Sally 
+ 
+Return by date : 2024-10-12 
+ 
+Items checkedout >>>>>>>>>>>>>>>>
+   1 -- 3542342 
+   2 -- 123 
+   3 -- 1235 
+   4 -- 12346 
+   5 -- 32464 
+Items checkedout <<<<<<<<<<<<<<<<
