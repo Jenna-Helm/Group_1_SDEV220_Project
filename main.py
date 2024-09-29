@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import random as random
-import Media_Class as mc
+import Media_Management as mc
 import Person_Class as pc
 import Checkouts_Class as cc
 
@@ -10,7 +10,7 @@ class RootMenu(tk.Tk):
     def __init__(self):
         super().__init__()
         self.geometry('400x150')
-        self.title("Library Systems")
+        self.title("LibraryTraks Systems")
 
         
         #create buttons
@@ -27,11 +27,11 @@ class RootMenu(tk.Tk):
         )
 
         #media
-        invintory_button = ttk.Button(
+        inventory_button = ttk.Button(
             self,
-            text="Invintory"
+            text="Inventory"
         )
-        invintory_button.pack(
+        inventory_button.pack(
             ipadx=5,
             ipady=5,
             side=tk.LEFT,
@@ -65,7 +65,7 @@ class RootMenu(tk.Tk):
 if __name__ == "__main__":
     #create the windows
     root = RootMenu() #Core window
-    checkoutNew = cc.CheckoutNew()
+    #checkoutNew = cc.CheckoutNew()
     #checkoutNew.mainloop()
 
-    #root.mainloop()
+    root.mainloop()
