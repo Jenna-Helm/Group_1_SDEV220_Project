@@ -32,14 +32,15 @@ class Media:
         )
         print(details)
 
-class MediaApp:
-    def __init__(self, main_window):
-        self.root = main_window
-        self.root.title("LibraryTraks Media Management")
+class MediaApp(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title("LibraryTraks Media Management")
+        self.geometry('600x400')
         self.media_list = []
 
         # Initialize widgets
-        self.form_frame = ttk.LabelFrame(self.root, text="Add New Media")
+        self.form_frame = ttk.LabelFrame(self, text="Add New Media")
         self.name_entry = ttk.Entry(self.form_frame)
         self.type_entry = ttk.Entry(self.form_frame)
         self.genre_entry = ttk.Entry(self.form_frame)
@@ -49,11 +50,11 @@ class MediaApp:
         self.in_stock_check = ttk.Checkbutton(self.form_frame, variable=self.in_stock_var)
         self.tags_entry = ttk.Entry(self.form_frame)
         self.add_button = ttk.Button(self.form_frame, text="Add Media", command=self.add_media)
-        self.load_button = ttk.Button(self.root, text="Load Media from File", command=self.load_media_from_file_dialog, width=20)
-        self.list_frame = ttk.LabelFrame(self.root, text="Media List")
+        self.load_button = ttk.Button(self, text="Load Media from File", command=self.load_media_from_file_dialog, width=20)
+        self.list_frame = ttk.LabelFrame(self, text="Media List")
         self.tree = ttk.Treeview(self.list_frame, columns=("ID", "Name", "Type", "Genre", "Author", "Serial Number", "In Stock", "Tags"), show="headings")
-        self.delete_button = ttk.Button(self.root, text="Delete Selected", command=self.delete_selected_media)
-        self.save_close_button = ttk.Button(self.root, text="Save & Close", command=self.save_and_close)
+        self.delete_button = ttk.Button(self, text="Delete Selected", command=self.delete_selected_media)
+        self.save_close_button = ttk.Button(self, text="Save & Close", command=self.save_and_close)
 
         self.create_widgets()
         self.load_media_from_file('media_data.csv')
@@ -107,8 +108,8 @@ class MediaApp:
 
         self.delete_button.grid(row=11, column=0, padx=5, pady=5, sticky="ew")
         self.save_close_button.grid(row=12, column=0, padx=5, pady=5, sticky="e")
-        self.root.grid_rowconfigure(3, weight=1)
-        self.root.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(3, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
     def add_media(self):
         name = self.name_entry.get()
@@ -150,6 +151,7 @@ class MediaApp:
         with open(file_path, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
+                id = row.get('ID', 'Unknown')
                 name = row.get('Name', 'Unknown')
                 media_type = row.get('Type', 'Unknown')
                 genre = row.get('Genre', 'Unknown')
@@ -158,7 +160,7 @@ class MediaApp:
                 in_stock = row.get('In Stock', 'no').lower() == 'yes'
                 tags = row.get('Tags', '').split(',')
 
-                new_media = Media(name, media_type, genre, author, serial_num, in_stock, tags)
+                new_media = Media(id,name, media_type, genre, author, serial_num, in_stock, tags)
                 self.media_list.append(new_media)
                 new_media.print_details()
 
@@ -172,7 +174,7 @@ class MediaApp:
 
     def save_and_close(self):
         self.save_media_to_file('media_data.csv')
-        self.root.destroy()
+        self.destroy()
 
     def save_media_to_file(self, file_path):
         with open(file_path, 'w', newline='') as csvfile:

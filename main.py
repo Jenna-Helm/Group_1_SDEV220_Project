@@ -12,7 +12,11 @@ class RootMenu(tk.Tk):
         self.geometry('400x150')
         self.title("LibraryTraks Systems")
 
-        
+        #function to open MediaApp
+        def open_media_app():
+            app = mc.MediaApp(self)
+            app.mainloop()
+
         #create buttons
         #staff
         staff_button = ttk.Button(
@@ -29,7 +33,8 @@ class RootMenu(tk.Tk):
         #media
         inventory_button = ttk.Button(
             self,
-            text="Inventory"
+            text="Inventory",
+            command = open_media_app #Bind command to function
         )
         inventory_button.pack(
             ipadx=5,
