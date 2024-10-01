@@ -16,12 +16,17 @@ class RootMenu(tk.Tk):
         def open_media_app():
             app = mc.MediaApp(self)
             app.mainloop()
+        #function to open staffApp
+        def open_staff_app():
+            app= pc.StaffApp(self)
+            app.mainloop()
 
         #create buttons
         #staff
         staff_button = ttk.Button(
             self,
-            text="Staff"
+            text="Staff",
+            command= open_staff_app
         )
         staff_button.pack(
             ipadx=5,

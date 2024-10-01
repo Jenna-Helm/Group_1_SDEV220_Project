@@ -57,9 +57,9 @@ class Staff(Person):
             print(f"ID: {staff.staffId}, Name: {staff.fName} {staff.lName}, Position: {staff.position}")
 
 # Tkinter GUI functions
-class StaffApp(tk.Tk):  # Changed to tk.Tk instead of tk.Toplevel for main application
-    def __init__(self):
-        super().__init__()
+class StaffApp(tk.Toplevel):  # Changed back to Toplevel to bind button on Main
+    def __init__(self, parent):
+        super().__init__(parent)
         self.title("LibraryTraks Staff Management")
         self.geometry('600x400')
         self.staff_list = []
