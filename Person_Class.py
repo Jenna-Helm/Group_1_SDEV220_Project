@@ -209,62 +209,7 @@ class StaffApp(tk.Toplevel):  # Changed back to Toplevel to bind button on Main
                     'Position': staff.position,
                 })
 
-#Cardholder By Sean Kennedy 
-
-# Base Person class
-class Person:
-    persons = []  # stores all objects that represent people
-
-    def __init__(self, fName, lName):
-        self.fName = fName
-        self.lName = lName
-
-# Staff class (already provided)
-class Staff(Person):
-    # subclass of person used for library staff
-    staff_list = []
-
-    def __init__(self, position, fName, lName):
-        super().__init__(fName, lName)
-        self.position = str(position)
-        self.staffId = self.generate_unique_id()
-        self.staff_list.append(self)
-
-    @staticmethod
-    def generate_unique_id(length=8):
-        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
-
-    def print_details(self):
-        details = (
-            f"Staff ID: {self.staffId}\n"
-            f"First Name: {self.fName}\n"
-            f"Last Name: {self.lName}\n"
-            f"Position: {self.position}\n"
-        )
-        print(details)
-
-    @classmethod
-    def add(cls, fName, lName, position):
-        new_staff = cls(position, fName, lName)
-        print(f"Added Staff: {new_staff.fName} {new_staff.lName}, ID: {new_staff.staffId}, Position: {new_staff.position}")
-
-    @classmethod
-    def remove(cls, staffId):
-        for staff in cls.staff_list:
-            if staff.staffId == staffId:
-                cls.staff_list.remove(staff)
-                print(f"Removed Staff: {staff.fName} {staff.lName}, ID: {staffId}")
-                return
-        print(f"No Staff found with the ID: {staffId}")
-
-    @classmethod
-    def list_all(cls):
-        if not cls.staff_list:
-            print("No staff members found.")
-            return
-        print("List of Active Staff Members:")
-        for staff in cls.staff_list:
-            print(f"ID: {staff.staffId}, Name: {staff.fName} {staff.lName}, Position: {staff.position}")
+#Cardholder By Sean Kennedy //Added 10/03/2024
 
 # CardHolder subclass
 class CardHolder(Person):

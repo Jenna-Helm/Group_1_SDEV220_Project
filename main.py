@@ -9,7 +9,7 @@ import Checkouts_Class as cc
 class RootMenu(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.geometry('400x200')
+        self.geometry('400x200') # Adjusted size sk
         self.title("LibraryTraks Systems")
 
         #function to open MediaApp
@@ -27,6 +27,7 @@ class RootMenu(tk.Tk):
 
         #create buttons
         #staff
+        #added function to make buttons scale with window size 
         staff_button = ttk.Button(
             self,
             text="Staff",
