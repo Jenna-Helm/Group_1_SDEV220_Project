@@ -36,16 +36,15 @@ Files
     Data Files (.csv): Stores data related to users, media, and transactions.
 
 Contributing
-Danielle Starlet
-Zach Baker
-Zachary Rosch
-Jenna Helm
-Sean Kennedy
+Danielle Starlet,
+Zach Baker,
+Zachary Rosch,
+Jenna Helm,
+Sean Kennedy,
 
 Contributions are welcome. Please fork the repository and create a pull request with your updates.
 License
 
-This project is licensed under the MIT License.
-Contact
+
 
 For any questions or issues, feel free to open an issue on the repository.
