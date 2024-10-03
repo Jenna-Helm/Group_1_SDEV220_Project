@@ -262,7 +262,7 @@ class CardHolderApp(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.title("LibraryTraks CardHolder Management")
-        self.geometry('600x400')
+        self.geometry('650x500')
         self.cardholder_list = []
 
         # Initialize widgets
