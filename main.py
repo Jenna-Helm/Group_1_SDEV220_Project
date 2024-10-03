@@ -9,7 +9,7 @@ import Checkouts_Class as cc
 class RootMenu(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.geometry('400x150')
+        self.geometry('400x200')
         self.title("LibraryTraks Systems")
 
         #function to open MediaApp
@@ -19,6 +19,10 @@ class RootMenu(tk.Tk):
         #function to open staffApp
         def open_staff_app():
             app= pc.StaffApp(self)
+            app.mainloop()
+        #function to open carholderApp //Added 10/03/2024
+        def open_cardholder_app():
+            app= pc.CardHolderApp(self)
             app.mainloop()
 
         #create buttons
@@ -31,10 +35,21 @@ class RootMenu(tk.Tk):
         staff_button.pack(
             ipadx=5,
             ipady=5,
-            side=tk.LEFT,
+            fill=tk.X,
             expand=True
         )
-
+         #cardholder //Added 10/03/2024
+        cardholder_button = ttk.Button(
+            self,
+            text="Cardholder",
+            command = open_cardholder_app
+        )
+        cardholder_button.pack(
+            ipadx=5,
+            ipady=5,
+            fill=tk.X,
+            expand=True
+        )
         #media
         inventory_button = ttk.Button(
             self,
@@ -44,7 +59,7 @@ class RootMenu(tk.Tk):
         inventory_button.pack(
             ipadx=5,
             ipady=5,
-            side=tk.LEFT,
+            fill=tk.X,
             expand=True
         )
 
@@ -56,7 +71,7 @@ class RootMenu(tk.Tk):
         checkout_ex_button.pack(
             ipadx=5,
             ipady=5,
-            side=tk.LEFT,
+            fill=tk.X,
             expand=True
         )
 
@@ -68,7 +83,7 @@ class RootMenu(tk.Tk):
         checkout_new_button.pack(
             ipadx=5,
             ipady=5,
-            side=tk.LEFT,
+            fill=tk.X,
             expand=True
         )
 
