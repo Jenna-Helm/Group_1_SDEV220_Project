@@ -68,4 +68,4 @@ if __name__ == "__main__":
     checkoutNew = cc.CheckoutNew()
     #checkoutNew.mainloop()
 
-    #root.mainloop()
+    root.mainloop()
