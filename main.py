@@ -4,6 +4,7 @@ import random as random
 import Media_Management as mc
 import Person_Class as pc
 import Checkouts_Class as cc
+import csv
 
 # create a class for the root menu
 class RootMenu(tk.Tk):
@@ -23,6 +24,10 @@ class RootMenu(tk.Tk):
         #function to open carholderApp //Added 10/03/2024
         def open_cardholder_app():
             app= pc.CardHolderApp(self)
+            app.mainloop()
+        #function to open the checkouts app
+        def open_new_checkout_app():
+            app = cc.CheckoutNew()
             app.mainloop()
 
         #create buttons
@@ -79,7 +84,8 @@ class RootMenu(tk.Tk):
         #checkouts
         checkout_new_button = ttk.Button(
             self,
-            text="Checkouts/new"
+            text="Checkouts/new",
+            command=open_new_checkout_app
         )
         checkout_new_button.pack(
             ipadx=5,

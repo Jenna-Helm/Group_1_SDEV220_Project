@@ -3,10 +3,14 @@ from tkinter import ttk
 from tkinter import Text
 import random, string
 import datetime as time
+from tkinter import messagebox
+import csv
+import os
 
-class CheckoutNew(tk.Tk):
+class CheckoutNew(tk.Toplevel):
     #How long until items must be returned in days
     checkout_time = 14
+
     
     def __init__(self):
         super().__init__()
@@ -81,10 +85,15 @@ class CheckoutNew(tk.Tk):
 
         self.cart = ttk.Treeview(
             self,
-            columns=("Serial num")
+            columns=("ID", "Name", "Type", "Genre", "Author", "Serial Number", "Tags"),
+            show="headings"
         )
-        self.cart.heading(0,text="Serial Number")
+        #self.cart.heading(0,text="Serial Number")
         self.cart.grid(column=0,columnspan=2,row=6)
+        # Column configuration 
+        for col in self.cart["columns"]:
+            self.cart.heading(col, text=col)
+            self.cart.column(col, width=70)
 
         #add buttons to manage the cart
         cart_remove_button = tk.Button(
@@ -101,11 +110,71 @@ class CheckoutNew(tk.Tk):
         )
         cart_finish.grid(column=1,row=7)
 
+    # check if item exists
+    def check_if_item_exists(self,file_path,column_name,target_item):
+        if not os.path.exists(file_path):
+            self.show_error("Bad path","media_data.csv not found")
+            return
+
+        with open(file_path, newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                if row[column_name] == target_item:               
+                    #if the item is found return all the data for it
+                    return row
+        return False
+
+    #check if the item is in stock
+    def check_if_item_in_stock(self,file_path,column_name,target_item):
+        if not os.path.exists(file_path):
+            self.show_error("Bad path","'media_data.csv' not found")
+            return
+
+        with open(file_path, newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                if row[column_name] == target_item:               
+                    #if the item is found check if it is in stock
+                        if row.get("In Stock","Unknown") == "Yes":
+                            return True
+                        else:
+                            return False
+        return False
+
+    #check if an item is already in the cart
+    def check_cart_for_item(self, target_value):
+        # go through the cart treeview
+        for item_id in self.cart.get_children():
+            item_values = self.cart.item(item_id)["values"]
+            #test if the item matches
+            if item_values[0] == target_value:
+                return True
+        return False
+
     #add an item to the cart
     def add_to_cart(self):       
     
+        #store the item to add
         text = self.add_fld.get(1.0,"end-1c")
-        self.cart.insert("","end",values=(text))        
+
+        #check the item exists
+        item_data = self.check_if_item_exists("media_data.csv","ID",text)
+        if not item_data:
+            self.show_error("Error", f"No item with ID {text} exists.")
+            return
+        
+        #check if the item is in stock
+        if not self.check_if_item_in_stock("media_data.csv","ID",text):
+            self.show_error("Error", f"Item {text} is not in stock.")
+            return
+
+        #check if the item is already in the cart
+        if self.check_cart_for_item(text):
+            self.show_error("Error", f"Item {text} is already in the cart.")
+            return
+
+        #If all tests pass add the item
+        self.cart.insert("", "end", values=(item_data["ID"], item_data["Name"], item_data["Type"], item_data["Genre"], item_data["Author"], item_data["Serial Number"], item_data["Tags"]))        
         self.add_fld.delete(1.0,"end")
 
     def remove_from_cart(self):
@@ -145,7 +214,7 @@ class CheckoutNew(tk.Tk):
             item_str = ' '.join(item_values)            
 
             #write to the file
-            file.write(f'   {index} -- {item_str} \n')
+            file.write(f'   {index} -- {item_str} \n || \n')
 
         
         file.write("Items checkedout <<<<<<<<<<<<<<<<\n")
@@ -156,6 +225,10 @@ class CheckoutNew(tk.Tk):
     @staticmethod
     def generate_unique_id(length=5):
         return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+    
+    # show an error message
+    def show_error(self,title,message):
+        messagebox.showerror(title,message)
 
 
 

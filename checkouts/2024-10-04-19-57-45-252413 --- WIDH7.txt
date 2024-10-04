@@ -1,0 +1,11 @@
+Checkout clerk : Lizzy 
+Card holder number : Bob 
+ 
+Return by date : 2024-10-18 
+ 
+Items checkedout >>>>>>>>>>>>>>>>
+   1 -- 84SG015A test 3 name test 3 type test 3 genre test 3 author test 3 serial number test-3-tag-1,  test-3-tag-2 
+ || 
+   2 -- YW93TADC test name 4 test type 4 test genre 4 test author 4 test sn 4 tag 4 1,  tag 4 2 
+ || 
+Items checkedout <<<<<<<<<<<<<<<<

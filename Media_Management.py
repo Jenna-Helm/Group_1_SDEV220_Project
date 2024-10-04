@@ -5,12 +5,12 @@ from tkinter import ttk, filedialog
 import csv, os
 
 class Media:
-    def __init__(self, name, media_type, genre, author, serial_num, in_stock, tags):
+    def __init__(self, unique_id,name, media_type, genre, author, serial_num, in_stock, tags):
         self.name = name
         self.media_type = media_type
         self.genre = genre
         self.author = author
-        self.unique_id = self.generate_unique_id()
+        self.unique_id = unique_id
         self.serial_num = serial_num
         self.in_stock = in_stock
         self.tags = tags
@@ -21,6 +21,7 @@ class Media:
 
     def print_details(self):
         details = (
+            f"ID: {self.unique_id}"
             f"Name: {self.name}\n"
             f"Type: {self.media_type}\n"
             f"Genre: {self.genre}\n"
@@ -36,7 +37,7 @@ class MediaApp(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.title("LibraryTraks Media Management")
-        self.geometry('600x400')
+        self.geometry('600x690')
         self.media_list = []
 
         # Initialize widgets
@@ -111,7 +112,19 @@ class MediaApp(tk.Toplevel):
         self.grid_rowconfigure(3, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
+        
+        #scroll bar for media
+        self.scrollBar = ttk.Scrollbar(
+            self.list_frame,
+            orient='vertical',
+            command=self.tree.yview
+        )
+        self.scrollBar.grid(row=0, column=1, padx=5, pady=5,sticky="ns")
+        # Configure the Treeview to use the scrollbar
+        self.tree.configure(yscrollcommand=self.scrollBar.set)
+
     def add_media(self):
+        unique_id = Media.generate_unique_id()
         name = self.name_entry.get()
         media_type = self.type_entry.get()
         genre = self.genre_entry.get()
@@ -120,7 +133,7 @@ class MediaApp(tk.Toplevel):
         in_stock = self.in_stock_var.get()
         tags = self.tags_entry.get().split(',')
 
-        new_media = Media(name, media_type, genre, author, serial_num, in_stock, tags)
+        new_media = Media(unique_id,name, media_type, genre, author, serial_num, in_stock, tags)
         self.media_list.append(new_media)
         new_media.print_details()
 
@@ -160,9 +173,11 @@ class MediaApp(tk.Toplevel):
                 in_stock = row.get('In Stock', 'no').lower() == 'yes'
                 tags = row.get('Tags', '').split(',')
 
+                
                 new_media = Media(id,name, media_type, genre, author, serial_num, in_stock, tags)
                 self.media_list.append(new_media)
                 new_media.print_details()
+                
 
                 # Add to treeview
                 self.tree.insert("", "end", values=(name, media_type, genre, author, serial_num, "Yes" if in_stock else "No", ", ".join(tags)))
