@@ -37,7 +37,7 @@ class MediaApp(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.title("LibraryTraks Media Management")
-        self.geometry('600x690')
+        self.geometry('875x675')
         self.media_list = []
 
         # Initialize widgets
@@ -62,39 +62,45 @@ class MediaApp(tk.Toplevel):
 
     def create_widgets(self):
         # Form to add new media
-        self.form_frame.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
+        self.form_frame.grid(row=0, column=0, padx=15, pady=5, sticky="ew")
 
         # Unique ID Label
         self.id_label = ttk.Label(self.form_frame, text="ID:")
         self.id_value = ttk.Label(self.form_frame, text="")
-        self.id_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
-        self.id_value.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+        self.id_label.grid(row=0, column=0, padx=5, pady=5, sticky="e")  
+        self.id_value.grid(row=0, column=1, padx=5, pady=5, sticky="w")  
 
-        ttk.Label(self.form_frame, text="Name:").grid(row=1, column=0, padx=5, pady=5, sticky="w")
-        self.name_entry.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
+        ttk.Label(self.form_frame, text="Name:").grid(row=1, column=0, padx=5, pady=5, sticky="e") 
+        self.name_entry.grid(row=1, column=1, padx=5, pady=5, sticky="w")  
+        self.name_entry.config(width=30)  
 
-        ttk.Label(self.form_frame, text="Type:").grid(row=2, column=0, padx=5, pady=5, sticky="w")
-        self.type_entry.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
+        ttk.Label(self.form_frame, text="Type:").grid(row=2, column=0, padx=5, pady=5, sticky="e") 
+        self.type_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")  
+        self.type_entry.config(width=30)  
 
-        ttk.Label(self.form_frame, text="Genre:").grid(row=3, column=0, padx=5, pady=5, sticky="w")
-        self.genre_entry.grid(row=3, column=1, padx=5, pady=5, sticky="ew")
+        ttk.Label(self.form_frame, text="Genre:").grid(row=3, column=0, padx=5, pady=5, sticky="e")  
+        self.genre_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w") 
+        self.genre_entry.config(width=30)  
 
-        ttk.Label(self.form_frame, text="Author:").grid(row=4, column=0, padx=5, pady=5, sticky="w")
-        self.author_entry.grid(row=4, column=1, padx=5, pady=5, sticky="ew")
+        ttk.Label(self.form_frame, text="Author:").grid(row=4, column=0, padx=5, pady=5, sticky="e")  
+        self.author_entry.grid(row=4, column=1, padx=5, pady=5, sticky="w")  
+        self.author_entry.config(width=30)  
 
-        ttk.Label(self.form_frame, text="Serial Number:").grid(row=5, column=0, padx=5, pady=5, sticky="w")
-        self.serial_entry.grid(row=5, column=1, padx=5, pady=5, sticky="ew")
+        ttk.Label(self.form_frame, text="Serial Number:").grid(row=5, column=0, padx=5, pady=5, sticky="e")  
+        self.serial_entry.grid(row=5, column=1, padx=5, pady=5, sticky="w")  
+        self.serial_entry.config(width=30)  
 
-        ttk.Label(self.form_frame, text="In Stock:").grid(row=6, column=0, padx=5, pady=5, sticky="w")
-        self.in_stock_check.grid(row=6, column=1, padx=5, pady=5, sticky="w")
+        ttk.Label(self.form_frame, text="In Stock:").grid(row=6, column=0, padx=5, pady=5, sticky="e")  
+        self.in_stock_check.grid(row=6, column=1, padx=5, pady=5, sticky="w")  
 
-        ttk.Label(self.form_frame, text="Tags:").grid(row=7, column=0, padx=5, pady=5, sticky="w")
-        self.tags_entry.grid(row=7, column=1, padx=5, pady=5, sticky="ew")
+        ttk.Label(self.form_frame, text="Tags:").grid(row=7, column=0, padx=5, pady=5, sticky="e")  
+        self.tags_entry.grid(row=7, column=1, padx=5, pady=5, sticky="w")  
+        self.tags_entry.config(width=30)  
 
-        self.add_button.grid(row=8, column=0, columnspan=2, padx=5, pady=5)
+        self.add_button.grid(row=8, column=0, padx=5, pady=5)
 
         # Button to load media from file
-        self.load_button.grid(row=9, column=0, padx=5, pady=5, sticky="w")
+        self.load_button.grid(row=9, column=0, padx=5, pady=5, sticky="w") 
 
         # Grid to display media
         self.list_frame.grid(row=10, column=0, padx=10, pady=10, sticky="nsew")
@@ -104,10 +110,15 @@ class MediaApp(tk.Toplevel):
 
         # Column configuration 
         for col in self.tree["columns"]:
-            self.tree.heading(col, text=col)
-            self.tree.column(col, width=100)
+            self.tree.heading(col, text=col, anchor="w")  
+            if col == "Name":
+                self.tree.column(col, width=150, anchor="w") 
+            elif col == "In Stock":
+                self.tree.column(col, width=60, anchor="w")  
+            else:
+                self.tree.column(col, width=100, anchor="w")  
 
-        self.delete_button.grid(row=11, column=0, padx=5, pady=5, sticky="ew")
+        self.delete_button.grid(row=11, column=0, padx=5, pady=5, sticky="e")
         self.save_close_button.grid(row=12, column=0, padx=5, pady=5, sticky="e")
         self.grid_rowconfigure(3, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -133,7 +144,7 @@ class MediaApp(tk.Toplevel):
         in_stock = self.in_stock_var.get()
         tags = self.tags_entry.get().split(',')
 
-        new_media = Media(unique_id,name, media_type, genre, author, serial_num, in_stock, tags)
+        new_media = Media(unique_id, name, media_type, genre, author, serial_num, in_stock, tags)
         self.media_list.append(new_media)
         new_media.print_details()
 
@@ -151,7 +162,7 @@ class MediaApp(tk.Toplevel):
         self.serial_entry.delete(0, tk.END)
         self.in_stock_var.set(False)
         self.tags_entry.delete(0, tk.END)
-        self.id_value.config(text="")
+        
 
     def load_media_from_file_dialog(self):
         file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
@@ -164,7 +175,7 @@ class MediaApp(tk.Toplevel):
         with open(file_path, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                id = row.get('ID', 'Unknown')
+                unique_id = row.get('ID', 'Unknown')
                 name = row.get('Name', 'Unknown')
                 media_type = row.get('Type', 'Unknown')
                 genre = row.get('Genre', 'Unknown')
@@ -173,14 +184,12 @@ class MediaApp(tk.Toplevel):
                 in_stock = row.get('In Stock', 'no').lower() == 'yes'
                 tags = row.get('Tags', '').split(',')
 
-                
-                new_media = Media(id,name, media_type, genre, author, serial_num, in_stock, tags)
+                new_media = Media(unique_id, name, media_type, genre, author, serial_num, in_stock, tags)
                 self.media_list.append(new_media)
                 new_media.print_details()
-                
 
                 # Add to treeview
-                self.tree.insert("", "end", values=(name, media_type, genre, author, serial_num, "Yes" if in_stock else "No", ", ".join(tags)))
+                self.tree.insert("", "end", values=(unique_id, name, media_type, genre, author, serial_num, "Yes" if in_stock else "No", ", ".join(tags)))
 
     def delete_selected_media(self):
         selected_items = self.tree.selection()
