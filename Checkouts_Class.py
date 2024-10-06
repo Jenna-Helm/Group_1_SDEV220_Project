@@ -4,8 +4,11 @@ from tkinter import Text
 import random, string
 import datetime as time
 from tkinter import messagebox
+from main import url_paths
 import csv
 import os
+
+
 
 class CheckoutNew(tk.Toplevel):
     #How long until items must be returned in days
@@ -57,7 +60,7 @@ class CheckoutNew(tk.Toplevel):
         #frame to hold the checkout entry and button
         add_frame = ttk.LabelFrame(
             self,
-            text="add by serial"
+            text="add by ID"
         )
         add_frame.grid(column=0,columnspan=2,row=4)
 
@@ -113,7 +116,7 @@ class CheckoutNew(tk.Toplevel):
     # check if item exists
     def check_if_item_exists(self,file_path,column_name,target_item):
         if not os.path.exists(file_path):
-            self.show_error("Bad path","media_data.csv not found")
+            self.show_error("Bad path",f"Path '{url_paths["media"]}' not found")
             return
 
         with open(file_path, newline='') as csvfile:
@@ -127,7 +130,7 @@ class CheckoutNew(tk.Toplevel):
     #check if the item is in stock
     def check_if_item_in_stock(self,file_path,column_name,target_item):
         if not os.path.exists(file_path):
-            self.show_error("Bad path","'media_data.csv' not found")
+            self.show_error("Bad path",f"Path '{url_paths["media"]}' not found")
             return
 
         with open(file_path, newline='') as csvfile:
@@ -158,13 +161,13 @@ class CheckoutNew(tk.Toplevel):
         text = self.add_fld.get(1.0,"end-1c")
 
         #check the item exists
-        item_data = self.check_if_item_exists("media_data.csv","ID",text)
+        item_data = self.check_if_item_exists(url_paths["media"],"ID",text)
         if not item_data:
             self.show_error("Error", f"No item with ID {text} exists.")
             return
         
         #check if the item is in stock
-        if not self.check_if_item_in_stock("media_data.csv","ID",text):
+        if not self.check_if_item_in_stock(url_paths["media"],"ID",text):
             self.show_error("Error", f"Item {text} is not in stock.")
             return
 
@@ -195,7 +198,7 @@ class CheckoutNew(tk.Toplevel):
         print(f'\n created checkout file {file_name}\n')
 
         #create a new checkout item
-        file = open(f'./checkouts/{file_name}.txt', 'w')
+        file = open(f'{url_paths["checkouts"]}{file_name}.txt', 'w')
 
         #write the clerk and card holders name to the file
         file.write(f'Checkout clerk : {self.checkNameInput.get(1.0,"end-1c")} \n')
@@ -206,6 +209,21 @@ class CheckoutNew(tk.Toplevel):
         file.write(f'Return by date : {return_by} \n \n')
 
         file.write("Items checkedout >>>>>>>>>>>>>>>>\n")
+        
+        #create a temporary list to store each entry and write to it.
+        file.write(str(self.cart.heading()))
+        for row_id in self.cart.get_children():
+            row = self.cart.item(row_id)["values"]
+            file.write(str(row))
+            
+
+        file.close()
+
+
+        
+
+
+        '''
         # Write the items to the checkout text file
         for index, item in enumerate(self.cart.get_children(), start=1):
             
@@ -220,6 +238,7 @@ class CheckoutNew(tk.Toplevel):
         file.write("Items checkedout <<<<<<<<<<<<<<<<\n")
         
         file.close()
+        '''
 
     # Generates 5 digit unique id   
     @staticmethod

@@ -6,8 +6,18 @@ import Person_Class as pc
 import Checkouts_Class as cc
 import csv
 
+
+
+#create a dictionary to store directories 
+url_paths = {
+    "media": "./media/media_data.csv",
+    "checkouts": "./checkouts/"
+} 
+
+
 # create a class for the root menu
 class RootMenu(tk.Tk):
+    
     def __init__(self):
         super().__init__()
         self.geometry('400x200') # Adjusted size sk
