@@ -4,16 +4,9 @@ import random as random
 import Media_Management as mc
 import Person_Class as pc
 import Checkouts_Class as cc
+import checkouts_existing as ce
 import csv
-
-
-
-#create a dictionary to store directories 
-url_paths = {
-    "media": "./media/media_data.csv",
-    "checkouts": "./checkouts/"
-} 
-
+from configure import url_paths
 
 # create a class for the root menu
 class RootMenu(tk.Tk):
@@ -39,6 +32,10 @@ class RootMenu(tk.Tk):
         def open_new_checkout_app():
             app = cc.CheckoutNew()
             app.mainloop()
+        #function to open the existing checkouts app
+        def open_existing_checkouts_app():
+            app= ce.CheckoutExistingNew()
+            app.mainloop
 
         #create buttons
         #staff
@@ -82,7 +79,8 @@ class RootMenu(tk.Tk):
         #checkouts
         checkout_ex_button = ttk.Button(
             self,
-            text="Checkouts/existing"
+            text="Checkouts/existing",
+            command = open_existing_checkouts_app
         )
         checkout_ex_button.pack(
             ipadx=5,

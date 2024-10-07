@@ -4,7 +4,7 @@ from tkinter import Text
 import random, string
 import datetime as time
 from tkinter import messagebox
-from main import url_paths
+from configure import url_paths
 import csv
 import os
 
@@ -70,7 +70,8 @@ class CheckoutNew(tk.Toplevel):
             width=25
         )
         self.add_fld.grid(column=0,columnspan=2,row=4)
-        
+        self.add_fld.bind('<Return>', self.enter_pressed)
+
         add_butn = tk.Button(
             add_frame,
             text="Add",
@@ -79,6 +80,7 @@ class CheckoutNew(tk.Toplevel):
         )
         add_butn.grid(column=3,row=4)
         
+       
         # checkout list <<<<<<<<<<<<<<<<<<<<
         cart_frame = ttk.LabelFrame(
             self,
@@ -92,7 +94,7 @@ class CheckoutNew(tk.Toplevel):
             show="headings"
         )
         #self.cart.heading(0,text="Serial Number")
-        self.cart.grid(column=0,columnspan=2,row=6)
+        self.cart.grid(column=0,columnspan=2,row=6,sticky="nswe",padx=10,pady=5)
         # Column configuration 
         for col in self.cart["columns"]:
             self.cart.heading(col, text=col)
@@ -105,6 +107,9 @@ class CheckoutNew(tk.Toplevel):
         command=self.remove_from_cart
         )
         cart_remove_button.grid(column=0,row=7)
+
+
+
 
         cart_finish = tk.Button(
             self,
@@ -150,9 +155,16 @@ class CheckoutNew(tk.Toplevel):
         for item_id in self.cart.get_children():
             item_values = self.cart.item(item_id)["values"]
             #test if the item matches
-            if item_values[0] == target_value:
+            if str(item_values[0]) == str(target_value):
                 return True
         return False
+
+    #If the enter key is used have it run the add
+    #    to cart function as well as return a break to prevent
+    #   a new line being added
+    def enter_pressed(self,event):
+        self.add_to_cart()
+        return "break"
 
     #add an item to the cart
     def add_to_cart(self):       
@@ -179,6 +191,7 @@ class CheckoutNew(tk.Toplevel):
         #If all tests pass add the item
         self.cart.insert("", "end", values=(item_data["ID"], item_data["Name"], item_data["Type"], item_data["Genre"], item_data["Author"], item_data["Serial Number"], item_data["Tags"]))        
         self.add_fld.delete(1.0,"end")
+
 
     def remove_from_cart(self):
         selected = self.cart.selection()
@@ -208,37 +221,20 @@ class CheckoutNew(tk.Toplevel):
         return_by = str(time.datetime.now() + time.timedelta(days=self.checkout_time)).split()[0]
         file.write(f'Return by date : {return_by} \n \n')
 
+        #write an open bracket for items checkedout 
         file.write("Items checkedout >>>>>>>>>>>>>>>>\n")
         
         #create a temporary list to store each entry and write to it.
-        file.write(str(self.cart.heading()))
+        file.write(f"{str(self.cart["columns"])}\n")
         for row_id in self.cart.get_children():
             row = self.cart.item(row_id)["values"]
-            file.write(str(row))
-            
+            file.write(f"{str(row)} \n")
 
-        file.close()
-
-
-        
-
-
-        '''
-        # Write the items to the checkout text file
-        for index, item in enumerate(self.cart.get_children(), start=1):
-            
-            #read an item from the list
-            item_values = self.cart.item(item, 'values')
-            item_str = ' '.join(item_values)            
-
-            #write to the file
-            file.write(f'   {index} -- {item_str} \n || \n')
-
-        
+        #write an closing bracket for items checkedout             
         file.write("Items checkedout <<<<<<<<<<<<<<<<\n")
         
+        #close the file
         file.close()
-        '''
 
     # Generates 5 digit unique id   
     @staticmethod

@@ -3,9 +3,11 @@ import random, string
 import tkinter as tk
 from tkinter import ttk, filedialog
 import csv, os
+from configure import url_paths
 
 class Media:
-    def __init__(self, unique_id,name, media_type, genre, author, serial_num, in_stock, tags):
+    def __init__(self, unique_id,name, media_type, genre, author, serial_num, in_stock, 
+    tags):
         self.name = name
         self.media_type = media_type
         self.genre = genre
@@ -58,7 +60,7 @@ class MediaApp(tk.Toplevel):
         self.save_close_button = ttk.Button(self, text="Save & Close", command=self.save_and_close)
 
         self.create_widgets()
-        self.load_media_from_file('media_data.csv')
+        self.load_media_from_file(url_paths["media"])
 
     def create_widgets(self):
         # Form to add new media
@@ -188,7 +190,7 @@ class MediaApp(tk.Toplevel):
             self.tree.delete(item)
 
     def save_and_close(self):
-        self.save_media_to_file('media_data.csv')
+        self.save_media_to_file(url_paths["media"])
         self.destroy()
 
     def save_media_to_file(self, file_path):
