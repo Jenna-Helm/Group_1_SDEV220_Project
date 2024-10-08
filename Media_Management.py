@@ -98,6 +98,14 @@ class MediaApp(tk.Toplevel):
         self.tags_entry.config(width=30)  
 
         self.add_button.grid(row=8, column=0, padx=5, pady=5)
+        
+        # **Add search entry and button**
+        self.search_entry = ttk.Entry(self)
+        self.search_entry.grid(row=9, column=0, padx=5, pady=5, sticky="se")
+        self.search_entry.config(width=75)
+
+        self.search_button = ttk.Button(self, text="Search", command=self.search_media)
+        self.search_button.grid(row=9, column=0, padx=5, pady=5, sticky="en")
 
         # Button to load media from file
         self.load_button.grid(row=9, column=0, padx=5, pady=5, sticky="w") 
@@ -106,7 +114,7 @@ class MediaApp(tk.Toplevel):
         self.list_frame.grid(row=10, column=0, padx=10, pady=10, sticky="nsew")
         self.tree.grid(row=0, column=0, sticky="nsew")
         self.list_frame.grid_rowconfigure(0, weight=1)
-        self.list_frame.grid_columnconfigure(0, weight=1)
+        self.list_frame.grid_columnconfigure(0, weight=2)
 
         # Column configuration 
         for col in self.tree["columns"]:
@@ -217,6 +225,15 @@ class MediaApp(tk.Toplevel):
                     'In Stock': 'Yes' if media.in_stock else 'No',
                     'Tags': ', '.join(media.tags)
                 })
+    def search_media(self):
+        query = self.search_entry.get().lower()
+        results = [media for media in self.media_list if query in media.name.lower() or query in media.media_type.lower() or query in media.genre.lower() or query in media.author.lower() or query in media.serial_num.lower() or any(query in tag.lower() for tag in media.tags)]
+
+        for row in self.tree.get_children():
+            self.tree.delete(row)
+
+        for media in results:
+            self.tree.insert("", "end", values=(media.unique_id, media.name, media.media_type, media.genre, media.author, media.serial_num, media.in_stock, ', '.join(media.tags)))
 
 if __name__ == "__main__":
     root = tk.Tk()
