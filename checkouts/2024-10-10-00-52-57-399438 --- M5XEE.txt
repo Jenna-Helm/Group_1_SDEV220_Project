@@ -1,0 +1,11 @@
+Checkout clerk :  John Smith (WKI4F8TG) 
+Card holder number :  Sally Sue (2b) 
+Checkout ID : M5XEE 
+Return by date : 2024-10-24 
+ 
+Items checkedout >>>>>>>>>>>>>>>>
+('ID', 'Name', 'Type', 'Genre', 'Author', 'Serial Number', 'Tags')
+['1HY41TV5', 'Pulp Fiction', 'DVD', 'Drama', 'Quentin Tarantino', '', 'Crime'] 
+['G16A572W', 'Intensity', 'Book', 'Fiction', 'Dean Koontz', 1472258908, 'Psychological Thriller'] 
+['XT6RAT4M', 'The Policy of Self-help', 'Book', 'Nonfiction', 'Miranda Sings', 1501117947, 'Healing'] 
+Items checkedout <<<<<<<<<<<<<<<<

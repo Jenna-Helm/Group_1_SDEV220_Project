@@ -4,6 +4,8 @@ from tkinter import Text
 import random, string
 import datetime as time
 from tkinter import messagebox
+from tkinter import *
+from ttkwidgets.autocomplete import AutocompleteEntry # make sure to run "pip install ttkwidgets"
 from configure import url_paths
 import csv
 import os
@@ -14,6 +16,12 @@ class CheckoutNew(tk.Toplevel):
     #How long until items must be returned in days
     checkout_time = 14
 
+    #list of auto complete IDs for media
+    auto_complete_media_ids = []
+    #list of auto complete IDs for staff
+    auto_complete_staff_ids = []
+    #list of card holders
+    auto_complete_card_holders = []
     
     def __init__(self):
         super().__init__()
@@ -23,6 +31,12 @@ class CheckoutNew(tk.Toplevel):
         self.grid_columnconfigure(0, weight=1) 
         self.grid_columnconfigure(1, weight=1) 
 
+        #generate a list of ID items for auocomplete
+        self.make_autocomplete_card_holder_list()
+        self.auto_complete_media_ids = self.make_autocomplete_list("media","ID")
+        #self.make_autocomplete_list()
+        self.make_autocomplete_staff_list() #staff list need their own function for now. but base function can be improved
+
         #checkout clerk. >>>>>>>>>
         clerk_name = ttk.LabelFrame(
             self,
@@ -30,14 +44,15 @@ class CheckoutNew(tk.Toplevel):
         )
         clerk_name.grid(column=0,row=0)
 
-        self.checkNameInput = Text(
+        self.staffid = tk.StringVar()
+        self.checkNameInput = ttk.Combobox(
             clerk_name,
             height=1,
             width=20,
-            relief="raised"
+            textvariable=self.staffid
         )
         self.checkNameInput.grid(column=0,row=0)
-        self.checkNameInput.insert(1.0,"Lizzy") #place holder name. 
+        self.checkNameInput['values'] = self.auto_complete_staff_ids
         
         # checkout customer >>>>>>>
 
@@ -47,14 +62,12 @@ class CheckoutNew(tk.Toplevel):
         )
         card_holder_frame.grid(column=1,row=0)
 
-        self.cardHolderNameInput = Text(
+        self.cardHolderNameInput = AutocompleteEntry(
             card_holder_frame,
-            height=1,
-            width=20,
-            relief="raised"
+            completevalues=self.auto_complete_card_holders,
         )
         self.cardHolderNameInput.grid(column=1,row=0)
-        self.cardHolderNameInput.insert(1.0,"Bob") #place holder name. 
+
 
         #create an add button. <<<<<<<<<<<<<<<<<<<<<<<<
         #frame to hold the checkout entry and button
@@ -64,10 +77,9 @@ class CheckoutNew(tk.Toplevel):
         )
         add_frame.grid(column=0,columnspan=2,row=4)
 
-        self.add_fld = Text(
+        self.add_fld = AutocompleteEntry(
             add_frame,
-            height=1,
-            width=25
+            completevalues=self.auto_complete_media_ids,
         )
         self.add_fld.grid(column=0,columnspan=2,row=4)
         self.add_fld.bind('<Return>', self.enter_pressed)
@@ -170,7 +182,7 @@ class CheckoutNew(tk.Toplevel):
     def add_to_cart(self):       
     
         #store the item to add
-        text = self.add_fld.get(1.0,"end-1c")
+        text = self.add_fld.get()
 
         #check the item exists
         item_data = self.check_if_item_exists(url_paths["media"],"ID",text)
@@ -190,7 +202,7 @@ class CheckoutNew(tk.Toplevel):
 
         #If all tests pass add the item
         self.cart.insert("", "end", values=(item_data["ID"], item_data["Name"], item_data["Type"], item_data["Genre"], item_data["Author"], item_data["Serial Number"], item_data["Tags"]))        
-        self.add_fld.delete(1.0,"end")
+        self.add_fld.delete(0,"end")
 
 
     def remove_from_cart(self):
@@ -214,8 +226,9 @@ class CheckoutNew(tk.Toplevel):
         file = open(f'{url_paths["checkouts"]}{file_name}.txt', 'w')
 
         #write the clerk and card holders name to the file
-        file.write(f'Checkout clerk : {self.checkNameInput.get(1.0,"end-1c")} \n')
-        file.write(f'Card holder number : {self.cardHolderNameInput.get(1.0,"end-1c")} \n \n')
+        file.write(f'Checkout clerk : {self.staffid.get()} \n')
+        file.write(f'Card holder number : {self.cardHolderNameInput.get()} \n')
+        file.write(f'Checkout ID : {checkout_num} \n')
 
         #write when items must be returned
         return_by = str(time.datetime.now() + time.timedelta(days=self.checkout_time)).split()[0]
@@ -235,6 +248,44 @@ class CheckoutNew(tk.Toplevel):
         
         #close the file
         file.close()
+
+     # populate the auto complete list
+    def make_autocomplete_list(self,path_url,row_name):
+        
+        list_data = []
+
+        with open(url_paths[path_url], newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                list_data.append(row[row_name])
+        
+        return list_data
+
+    def make_autocomplete_list_staff(self):
+        
+        with open(url_paths["media"], newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                self.auto_complete_ids.append(row["ID"])
+        
+
+    def make_autocomplete_staff_list(self):
+        with open(url_paths["staff"], newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                first = str(row["First Name"])
+                last = str(row["Last Name"])
+                ID = str(row["Staff ID"])
+                self.auto_complete_staff_ids.append(str(f' {first} {last} ({ID})'))
+   
+    def make_autocomplete_card_holder_list(self):
+        with open(url_paths["cardHolders"], newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                first = str(row["fName"])
+                last = str(row["lName"])
+                ID = str(row["ID"])
+                self.auto_complete_card_holders.append(str(f' {first} {last} ({ID})'))
 
     # Generates 5 digit unique id   
     @staticmethod
