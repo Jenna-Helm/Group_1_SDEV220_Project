@@ -18,7 +18,7 @@ To run the project locally:
 
 Install the required dependencies :
 
-   pip install ttkwidgets
+    pip install ttkwidgets
 
 Usage
 
