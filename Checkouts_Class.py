@@ -129,7 +129,31 @@ class CheckoutNew(tk.Toplevel):
             command=self.finish_checkout
         )
         cart_finish.grid(column=1,row=7)
+    #login to allow checkout
+     def login_screen(self):
+        self.login_window = tk.Toplevel(self)
+        self.login_window.title("Login")
 
+        tk.Label(self.login_window, text="Username:").grid(row=0, column=0, padx=10, pady=10)
+        self.username_entry = tk.Entry(self.login_window)
+        self.username_entry.grid(row=0, column=1, padx=10, pady=10)
+
+        tk.Label(self.login_window, text="Password:").grid(row=1, column=0, padx=10, pady=10)
+        self.password_entry = tk.Entry(self.login_window, show="*")
+        self.password_entry.grid(row=1, column=1, padx=10, pady=10)
+
+        login_button = tk.Button(self.login_window, text="Login", command=self.check_login)
+        login_button.grid(row=2, columnspan=2, padx=10, pady=10)
+    #check username and password is correct
+    def check_login(self):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
+
+        if username == "Admin" and password == "Password01":
+            self.login_window.destroy()  #close login window
+        else:
+            messagebox.showerror("Login Error", "Invalid username or password.")
+            
     # check if item exists
     def check_if_item_exists(self,file_path,column_name,target_item):
         if not os.path.exists(file_path):
