@@ -1,0 +1,9 @@
+Checkout clerk :  Jane Doe (JWETB0KS) 
+Card holder number :  Sally Sue (2b9YLHMWM2) 
+Checkout ID : TF3PB 
+Return by date : 2024-10-9 
+ 
+Items checkedout >>>>>>>>>>>>>>>>
+('ID', 'Name', 'Type', 'Genre', 'Author', 'Serial Number', 'Tags')
+1HY41TV5, Pulp Fiction, DVD, Drama, Quentin Tarantino, , Crime
+49WLO3HK, Watchers, Book, Fiction, Dean Koontz, 425188809, Thriller Scary

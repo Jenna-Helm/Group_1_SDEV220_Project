@@ -5,7 +5,7 @@ import random, string
 import datetime as time
 from tkinter import messagebox
 from tkinter import *
-from ttkwidgets.autocomplete import AutocompleteEntry # make sure to run "pip install ttkwidgets"
+from ttkwidgets.autocomplete import AutocompleteEntry
 from configure import url_paths
 import csv
 import os
@@ -133,7 +133,7 @@ class CheckoutNew(tk.Toplevel):
     # check if item exists
     def check_if_item_exists(self,file_path,column_name,target_item):
         if not os.path.exists(file_path):
-            self.show_error("Bad path",f"Path '{url_paths["media"]}' not found")
+            self.show_error("Bad path",f"Path '{url_paths['media']}' not found")
             return
 
         with open(file_path, newline='') as csvfile:
@@ -147,7 +147,7 @@ class CheckoutNew(tk.Toplevel):
     #check if the item is in stock
     def check_if_item_in_stock(self,file_path,column_name,target_item):
         if not os.path.exists(file_path):
-            self.show_error("Bad path",f"Path '{url_paths["media"]}' not found")
+            self.show_error("Bad path",f"Path '{url_paths['media']}' not found")
             return
 
         with open(file_path, newline='') as csvfile:
@@ -208,8 +208,9 @@ class CheckoutNew(tk.Toplevel):
     def remove_from_cart(self):
         selected = self.cart.selection()
         if selected:
-            self.cart.delete(selected)
-
+            for item in selected:
+                self.cart.delete(item)
+                
     def finish_checkout(self):
         #generate a random checkout number.
         checkout_num = str(self.generate_unique_id())
@@ -238,13 +239,19 @@ class CheckoutNew(tk.Toplevel):
         file.write("Items checkedout >>>>>>>>>>>>>>>>\n")
         
         #create a temporary list to store each entry and write to it.
-        file.write(f"{str(self.cart["columns"])}\n")
-        for row_id in self.cart.get_children():
+        file.write(f"{str(self.cart['columns'])}\n")
+        for index, row_id in enumerate(self.cart.get_children()):
+            
             row = self.cart.item(row_id)["values"]
-            file.write(f"{str(row)} \n")
 
-        #write an closing bracket for items checkedout             
-        file.write("Items checkedout <<<<<<<<<<<<<<<<\n")
+            # Convert the row values to a string without brackets and quotes
+            row_str = ', '.join(map(str, row))  # Join values as a comma-separated string
+             
+            file.write(f"{str(row_str)}")
+            #if we are on the last line we do not need a new space
+            if index != len(self.cart.get_children())-1:
+                file.write(f"\n")
+            
         
         #close the file
         file.close()

@@ -1,0 +1,9 @@
+Checkout clerk :  Jane Doe (JWETB0KS) 
+Card holder number :  Willy Wills (IOKPYN3I)
+Checkout ID : QA7HE 
+Return by date : 2024-10-03 
+ 
+Items checkedout >>>>>>>>>>>>>>>>
+('ID', 'Name', 'Type', 'Genre', 'Author', 'Serial Number', 'Tags')
+9YLHMWM2, Pirates of the Carribean, DVD, Adventure/Fantasy, Fore Verbiniski, 786936224431, Pirates
+H9PADEVI, A journey:self esteem, Book, Nonfiction, Billy Clay, 9798870778525, Trama
