@@ -16,9 +16,9 @@ To run the project locally:
 
   git clone https://github.com/Jenna-Helm/Group_1_SDEV220_Project.git
 
-Install the required dependencies (if any are listed in requirements.txt):
+Install the required dependencies :
 
-    pip install -r requirements.txt
+   pip install ttkwidgets
 
 Usage
 
