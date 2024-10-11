@@ -35,6 +35,12 @@ Files
     media_management.py: Script for managing media resources.
     Data Files (.csv): Stores data related to users, media, and transactions.
 
+Checkouts Username and Password
+    Username: Admin 
+    Password: Password01
+
+
+    
 Contributing
 Danielle Starlet,
 Zach Baker,
