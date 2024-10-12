@@ -1,0 +1,10 @@
+Checkout clerk :  Jane Doe (JWETB0KS) 
+Card holder number :  Sally Sue (2b9YLHMWM2) 
+Checkout ID : 65VIJ 
+Return by date : 2024-10-26 
+ 
+Items checkedout >>>>>>>>>>>>>>>>
+('ID', 'Name', 'Type', 'Genre', 'Author', 'Serial Number', 'Tags'),Returned
+49WLO3HK, Watchers, Book, Fiction, Dean Koontz, 425188809, Thriller Scary,No
+G16A572W, Intensity, Book, Fiction, Dean Koontz, 1472258908, Psychological Thriller,No
+LMUWDLP1, Revival, Book, Fiction, Stephen King, 1476770395, Redemption,No

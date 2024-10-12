@@ -8,7 +8,8 @@ from tkinter import messagebox
 from configure import url_paths
 import csv
 import os
-
+import shutil
+import checkouts_existing as ce
 
 # create a class for the window
 class CheckoutExistingNew(tk.Toplevel):
@@ -44,7 +45,6 @@ class CheckoutExistingNew(tk.Toplevel):
         #hide the fileName column
         self.checkoutList.column("fileName", width=0, stretch=tk.NO)
 
-
         #frame for the current checkout
         self.currentFrame = ttk.LabelFrame(
             self,
@@ -54,10 +54,20 @@ class CheckoutExistingNew(tk.Toplevel):
 
         self.current_items_list = ttk.Treeview(
             self.currentFrame,
-            columns=("ID", "Name", "Type", "Genre", "Author", "Serial Number", "Tags"),
+            columns=("ID", "Name", "Type", "Genre", "Author", "Serial Number", "Tags","Returned"),
             show="headings"
         )
         self.current_items_list.grid(column=0,columnspan=2,row=4, rowspan=3,sticky="nswe")
+        
+        #return button to restock the item
+        self.return_button = tk.Button(
+            self.currentFrame,
+            text="Return to stock",
+            command=self.return_item
+        )
+        self.return_button.grid(column=0,row=7)
+        self.return_button.config(state="disabled")
+        
         # Column configuration 
         for col in self.current_items_list["columns"]:
             self.current_items_list.heading(col, text=col)
@@ -73,10 +83,15 @@ class CheckoutExistingNew(tk.Toplevel):
         self.populate_checkouts()
 
         self.checkoutList.bind('<<TreeviewSelect>>', lambda event: self.populate_checkout_items())
-    
+        self.current_items_list.bind('<<TreeviewSelect>>', lambda event: self.populate_selected_checkout())
+
     #read all the files in the checkouts folder and populate the checkouts list
     def populate_checkouts(self):
         dir_list = os.listdir(url_paths["checkouts"])
+
+        #remove any items already in the tree
+        for item in self.checkoutList.get_children():
+            self.checkoutList.delete(item)
 
         #loop through entries and add them to the treeview
         for item in dir_list:
@@ -105,14 +120,14 @@ class CheckoutExistingNew(tk.Toplevel):
                     current_date = datetime.datetime.now().date()
                    
                     # compare the dates and append if overdue
-                    if check_date < (current_date - timedelta(days=1)):
+                    if check_date < (current_date - timedelta(days=0)):
                         #get the amount of days it is over
-                        overdue_days = (current_date - check_date - timedelta(days=1)).days
+                        overdue_days = (current_date - check_date - timedelta(days=0)).days
                         duedate = f"{duedate} : (OVERDUE {overdue_days} days)"
                     #if due today append
                     print(f"formatted_date = {check_date}")
                     print(f"checkdate = {check_date}")
-                    if check_date == (current_date - timedelta(days=1)):
+                    if check_date == (current_date - timedelta(days=0)):
                         duedate = f"{check_date} : (DUE TODAY)"
 
                     #because the due date is the last item we need for this list.
@@ -121,8 +136,11 @@ class CheckoutExistingNew(tk.Toplevel):
 
                 file.close()
 
-
+    #read the file related to the selected checkout and populate the current items treeview
     def populate_checkout_items(self):
+
+        #disable the return button
+        self.return_button.config(state="disabled")
 
         selected_item = self.checkoutList.selection()
         file_name = self.checkoutList.item(selected_item,"values")[3]
@@ -131,7 +149,6 @@ class CheckoutExistingNew(tk.Toplevel):
         for item in self.current_items_list.get_children():
             self.current_items_list.delete(item)
 
-        
         #read the file and populate the treeview
         file = open(url_paths["checkouts"]+file_name)
         for index,line in enumerate(file):
@@ -140,13 +157,120 @@ class CheckoutExistingNew(tk.Toplevel):
             if index >= 7:
                 #print(line, end='')
                 self.current_items_list.insert("", "end", values=line.strip().split(","))
-
                     
         file.close() 
+
+    #if a checked out item is selected. enable the return button
+    def populate_selected_checkout(self):
+        
+        #enable the return button
+        self.return_button.config(state="normal")
+
+    # mark an item as being returned
+    def return_item(self):
+        
+        #create a temporary list to store the file rewrite
+        temp_data = []
+
+        #create a test boolean that is set to True if all items are returned. else False
+        returns_complete = True
+
+        #get the selected row and the media item ID related to it.
+        selected_row = self.current_items_list.selection()
+        selected_item_id = self.current_items_list.item(selected_row, "values")[0]
+        
+        #get the file name related to the checkout
+        file_name = self.checkoutList.item(self.checkoutList.selection(),"values")[3]    
+
+        #prepare a temp file that matches the origonal. but replace the return status for the chosen item
+        with open(url_paths["checkouts"]+file_name, 'r') as file:
+            for line in file:
+                #If the current line belongs to the selection, Modify the return state
+                if line.split(",")[0] == selected_item_id:
+                    line = str(line).replace("No","Yes")
+                
+                #test the line to see if it is No (not returned) if the item is not returned
+                #   then the file needs to stay in current checkouts 
+                if "No" in line:
+                    returns_complete = False
+
+                #write to the temp file
+                temp_data.append(line)        
+
+        file.close() 
+        
+        #rewrite the file 
+        with open(url_paths["checkouts"]+file_name, 'w') as file:
+            for item in temp_data:
+                file.write(item)
+
+        file.close()
+
+        #set the item in stock boolean to true
+        self.checkin_items(url_paths["media"],selected_item_id)
+
+        #if all items are returned we need to move the file to the finished checkouts dirrectory 
+        if returns_complete:
+             
+             #Before the file is moved. Append the end of it with the time of completion.
+             file = open(url_paths["checkouts"]+file_name,"a")
+             file.write(f"\n\nCheckout finished {datetime.datetime.now()}")
+             file.close()
+
+             source = url_paths["checkouts"]+file_name
+             destination = url_paths["finished_checkouts"]+file_name
+             dest = shutil.move(source,destination)
+             self.Show_Info("Checkout Complete","All items are returned. file moved to completed checkouts")
+
+             #reload all windows to remove the finished file from the treeview
+             self.populate_checkouts()
+
+            #clear the current_items_list 
+             for item in self.current_items_list.get_children():
+                self.current_items_list.delete(item)
+
+        else:
+            self.Show_Info("item Returned",f"item with ID {selected_item_id} returned.")
+
+        #reopen the file to show the change
+        self.populate_checkout_items()
+
+    #change the in stock bolleon to True.
+    def checkin_items(self,file_path,item_ID):
+        
+        # temp storage for the data
+        temp_cvs = []
+        
+        if not os.path.exists(file_path):
+            self.show_error("Bad path",f"Path '{url_paths['media']}' not found")
+            return
+
+        #loop through the items and update anything in the checkout
+        with open(file_path, newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                if row["ID"] == item_ID:
+                    #if the item is found check if it is in stock
+                    row["In Stock"] = "Yes"
+                    print(f"row {row}")
+                
+                #write the row to the temp cvs
+                temp_cvs.append(row)   
+        
+        #write the file
+        with open(file_path, mode='w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=temp_cvs[0].keys())
+            writer.writeheader()
+            writer.writerows(temp_cvs)
 
     # show an error message
     def show_error(self,title,message):
         messagebox.showerror(title,message)
+
+    # show an success message
+    def Show_Info(self,title,message):
+        messagebox.showinfo(title,message)
+
 
 # debug. make the window locally for rapid testing
 if __name__ == "__main__":

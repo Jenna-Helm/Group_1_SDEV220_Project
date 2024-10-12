@@ -120,15 +120,14 @@ class CheckoutNew(tk.Toplevel):
         )
         cart_remove_button.grid(column=0,row=7)
 
-
-
-
         cart_finish = tk.Button(
             self,
             text="Checkout",
             command=self.finish_checkout
         )
         cart_finish.grid(column=1,row=7)
+
+
 
     # check if item exists
     def check_if_item_exists(self,file_path,column_name,target_item):
@@ -143,6 +142,8 @@ class CheckoutNew(tk.Toplevel):
                     #if the item is found return all the data for it
                     return row
         return False
+
+
 
     #check if the item is in stock
     def check_if_item_in_stock(self,file_path,column_name,target_item):
@@ -160,6 +161,37 @@ class CheckoutNew(tk.Toplevel):
                         else:
                             return False
         return False
+
+
+
+    #change the in stock bolleon to false.
+    def checkout_items(self,file_path,item_list):
+        
+        # temp storage for the data
+        temp_cvs = []
+        
+        if not os.path.exists(file_path):
+            self.show_error("Bad path",f"Path '{url_paths['media']}' not found")
+            return
+
+        #loop through the items and update anything in the checkout
+        with open(file_path, newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                if row["ID"] in item_list:               
+                    #if the item is found check if it is in stock
+                    row["In Stock"] = "No"
+                
+                #write the row to the temp cvs
+                temp_cvs.append(row)      
+        
+        #write the file
+        with open(file_path, mode='w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=temp_cvs[0].keys())
+            writer.writeheader()
+            writer.writerows(temp_cvs)
+        
+
 
     #check if an item is already in the cart
     def check_cart_for_item(self, target_value):
@@ -217,6 +249,9 @@ class CheckoutNew(tk.Toplevel):
         checkout_time = str(time.datetime.now())
         formated_time = checkout_time.replace(".","-").replace(" ","-").replace(":","-")
         
+        #make an empty list to hold item IDs for use in checkout_items
+        id_list = []
+
         #make a file name using the time and a random code
         file_name = f'{formated_time} --- {checkout_num}'
 
@@ -233,28 +268,40 @@ class CheckoutNew(tk.Toplevel):
 
         #write when items must be returned
         return_by = str(time.datetime.now() + time.timedelta(days=self.checkout_time)).split()[0]
-        file.write(f'Return by date : {return_by} \n \n')
+        file.write(f'Return by date : {return_by} \n')
 
         #write an open bracket for items checkedout 
         file.write("Items checkedout >>>>>>>>>>>>>>>>\n")
         
         #create a temporary list to store each entry and write to it.
-        file.write(f"{str(self.cart['columns'])}\n")
+        file.write(f"{str(self.cart['columns'])},Returned\n")
         for index, row_id in enumerate(self.cart.get_children()):
             
+            # add the ID to a list to use in checkout_items
+            id_list.append(self.cart.item(row_id)["values"][0])
+
             row = self.cart.item(row_id)["values"]
 
             # Convert the row values to a string without brackets and quotes
             row_str = ', '.join(map(str, row))  # Join values as a comma-separated string
-             
-            file.write(f"{str(row_str)}")
+            
+            #write the line
+            file.write(f"{str(row_str)},No")
+
             #if we are on the last line we do not need a new space
             if index != len(self.cart.get_children())-1:
                 file.write(f"\n")
             
-        
         #close the file
         file.close()
+
+        self.Show_Info("success","Checkout File made.")
+        self.destroy()
+
+        #update the invintory to display the items checked out
+        self.checkout_items(url_paths["media"],id_list)
+
+
 
      # populate the auto complete list
     def make_autocomplete_list(self,path_url,row_name):
@@ -268,6 +315,8 @@ class CheckoutNew(tk.Toplevel):
         
         return list_data
 
+
+
     def make_autocomplete_list_staff(self):
         
         with open(url_paths["media"], newline='') as csvfile:
@@ -275,6 +324,7 @@ class CheckoutNew(tk.Toplevel):
             for row in reader:
                 self.auto_complete_ids.append(row["ID"])
         
+
 
     def make_autocomplete_staff_list(self):
         with open(url_paths["staff"], newline='') as csvfile:
@@ -285,6 +335,8 @@ class CheckoutNew(tk.Toplevel):
                 ID = str(row["Staff ID"])
                 self.auto_complete_staff_ids.append(str(f' {first} {last} ({ID})'))
    
+
+
     def make_autocomplete_card_holder_list(self):
         with open(url_paths["cardHolders"], newline='') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -294,14 +346,24 @@ class CheckoutNew(tk.Toplevel):
                 ID = str(row["ID"])
                 self.auto_complete_card_holders.append(str(f' {first} {last} ({ID})'))
 
+
+
     # Generates 5 digit unique id   
     @staticmethod
     def generate_unique_id(length=5):
         return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
     
+
+
     # show an error message
     def show_error(self,title,message):
         messagebox.showerror(title,message)
+
+
+
+        # show an success message
+    def Show_Info(self,title,message):
+        messagebox.showinfo(title,message)
 
 
 
