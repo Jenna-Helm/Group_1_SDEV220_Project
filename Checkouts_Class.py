@@ -22,7 +22,10 @@ class CheckoutNew(tk.Toplevel):
     auto_complete_staff_ids = []
     #list of card holders
     auto_complete_card_holders = []
-    
+    #string of valid characters for entry
+    valid_ID_characters = "abcdefghijklmnopqrstuvwxuyz1234567890"
+
+
     def __init__(self):
         super().__init__()
         self.geometry('655x850')
@@ -213,6 +216,17 @@ class CheckoutNew(tk.Toplevel):
     #add an item to the cart
     def add_to_cart(self):       
     
+        #check the entery box to make sure it has valid text
+        if self.add_fld.get() == "":
+            self.show_error("Entry Error","No ID in in the entry field.")
+            return 
+
+        #check entry for invalid characters
+        for index in str(self.add_fld.get()).lower():
+            if index not in self.valid_ID_characters:
+                self.show_error("Entry Error","Invalid character in entry")
+                return
+
         #store the item to add
         text = self.add_fld.get()
 
@@ -224,12 +238,12 @@ class CheckoutNew(tk.Toplevel):
         
         #check if the item is in stock
         if not self.check_if_item_in_stock(url_paths["media"],"ID",text):
-            self.show_error("Error", f"Item {text} is not in stock.")
+            self.show_error("Entry Error", f"Item {text} is not in stock.")
             return
 
         #check if the item is already in the cart
         if self.check_cart_for_item(text):
-            self.show_error("Error", f"Item {text} is already in the cart.")
+            self.show_error("Entry Error", f"Item {text} is already in the cart.")
             return
 
         #If all tests pass add the item
@@ -244,6 +258,21 @@ class CheckoutNew(tk.Toplevel):
                 self.cart.delete(item)
                 
     def finish_checkout(self):
+        
+        #check the cart has items in it
+        if len(self.cart.get_children()) == 0:
+            self.show_error("Checkout error","No items in cart.")
+            return
+
+        #test that card holder and checkout clerck fields are populated
+        if self.cardHolderNameInput.get() == "":
+            self.show_error("Checkout error","No card holder ID entered.")
+            return
+        
+        if self.staffid.get() == "":
+            self.show_error("Checkout error","No staff ID entered.")
+            return 
+        
         #generate a random checkout number.
         checkout_num = str(self.generate_unique_id())
         checkout_time = str(time.datetime.now())
@@ -268,7 +297,7 @@ class CheckoutNew(tk.Toplevel):
 
         #write when items must be returned
         return_by = str(time.datetime.now() + time.timedelta(days=self.checkout_time)).split()[0]
-        file.write(f'Return by date : {return_by} \n')
+        file.write(f'Return by date : {return_by} \n\n')
 
         #write an open bracket for items checkedout 
         file.write("Items checkedout >>>>>>>>>>>>>>>>\n")

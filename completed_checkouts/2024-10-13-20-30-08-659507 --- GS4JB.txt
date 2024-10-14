@@ -1,0 +1,10 @@
+Checkout clerk :  John Smith (WKI4F8TG) 
+Card holder number :  Willy Wills (IOKPYN3I) 
+Checkout ID : GS4JB 
+Return by date : 2024-10-27 
+
+Items checkedout >>>>>>>>>>>>>>>>
+('ID', 'Name', 'Type', 'Genre', 'Author', 'Serial Number', 'Tags'),Returned
+1BVTHMIH, The Outsider, Book, Fiction, Stephen King, 1476770395, Scary,Yes
+
+Checkout finished 2024-10-13 20:30:51.503470
