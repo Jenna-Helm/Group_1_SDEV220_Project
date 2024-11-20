@@ -41,7 +41,17 @@ class MediaApp(tk.Toplevel):
         self.title("LibraryTraks Media Management")
         self.geometry('875x675')
         self.media_list = []
+        self.is_logged_in = False
 
+        #username and password
+        self.username = "Admin"
+        self.password = "Password01"
+
+        self.login_frame = ttk.Frame(self)
+        self.username_entry = ttk.Entry(self.login_frame)
+        self.password_entry = ttk.Entry(self.login_frame, show='*')
+        self.login_button = ttk.Button(self.login_frame, text="Login", command=self.login)
+        
         # Initialize widgets
         self.form_frame = ttk.LabelFrame(self, text="Add New Media")
         self.name_entry = ttk.Entry(self.form_frame)
@@ -63,8 +73,17 @@ class MediaApp(tk.Toplevel):
         self.load_media_from_file(url_paths["media"])
 
     def create_widgets(self):
+        #login window
+        self.login_frame.grid(row=0, column=0, padx=15, pady=5, sticky="ew")
+        ttk.Label(self.login_frame, text="Username:").grid(row=0, column=0, padx=5, pady=5, sticky="e")
+        self.username_entry.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+        ttk.Label(self.login_frame, text="Password:").grid(row=1, column=0, padx=5, pady=5, sticky="e")
+        self.password_entry.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+        self.login_button.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
+        
         # Form to add new media
         self.form_frame.grid(row=0, column=0, padx=15, pady=5, sticky="ew")
+        self.form_frame.grid_remove()
 
         # Unique ID Label
         self.id_label = ttk.Label(self.form_frame, text="ID:")
@@ -143,6 +162,14 @@ class MediaApp(tk.Toplevel):
         self.scrollBar.grid(row=0, column=1, padx=5, pady=5,sticky="ns")
         # Configure the Treeview to use the scrollbar
         self.tree.configure(yscrollcommand=self.scrollBar.set)
+
+    def login(self):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
+        
+        if username == self.username and password == self.password:
+            self.is_logged_in = True
+            self.login_frame.grid_remove()
 
     def add_media(self):
         unique_id = Media.generate_unique_id()
